@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <title>User Registration Form</title>
+    <!--CSS-->
+    <style>
+        .border-red-500 {
+            border-color: red !important;
+            box-shadow: 0 0 5px red;
+        }
+
+        .border-green-500 {
+            border-color: green !important;
+            box-shadow: 0 0 5px green;
+        }
+
+        body{
+            overflow: hidden;
+        }
+        #nameError, #emailError, #passwordError, #confirmPasswordError, #dobError, #regbut {
+            font-family: 'Playfair Display', serif;
+        }
+
+       
+    </style>
+    <script>
+        //defining validation pattern for each element
+        function validateName(name) {
+            const nameRegex = /^[a-zA-Z\s]{3,}$/;
+            return nameRegex.test(name);
+        }
+        //email pattern
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        //password pattern
+        function validatePassword(password) {
+            const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+            return passwordRegex.test(password);
+        }
+        //checking if password matches
+        function checkPasswordsMatch(password, confirmPassword) {
+            return password === confirmPassword;
+        }
+        //function for calculating age
+        function calculateAge(dob) {
+            const birthDate = new Date(dob);
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age;
+        }
+        //functuin to check if age greater than 18
+        function validateDateOfBirth(dob) {
+            const age = calculateAge(dob);
+            return age >= 18;
+        }
+
+        function validateForm(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const dob = document.getElementById('dob').value;
+
+            let valid = true;
+            //TO print success and faliure messages.
+            if (!validateName(name)) {
+                showErrorMessage('name', 'Name must be at least 3 alphabetic characters.');
+                valid = false;
+            } else {
+                showSuccessMessage('name');
+            }
+
+            if (!validateEmail(email)) {
+                showErrorMessage('email', 'Invalid email format.');
+                valid = false;
+            } else {
+                showSuccessMessage('email');
+            }
+
+            if (!validatePassword(password)) {
+                showErrorMessage('password', 'Password must be at least 8 characters long and contain both letters and numbers.');
+                valid = false;
+            } else {
+                showSuccessMessage('password');
+            }
+
+            if (!checkPasswordsMatch(password, confirmPassword)) {
+                showErrorMessage('confirmPassword', 'Passwords do not match.');
+                valid = false;
+            } else {
+                showSuccessMessage('confirmPassword');
+            }
+
+            if (!validateDateOfBirth(dob)) {
+                showErrorMessage('dob', 'You must be at least 18 years old.');
+                valid = false;
+            } else {
+                showSuccessMessage('dob');
+            }
+
+            if (valid) {
+                window.location.href = "hj.html";
+            }
+        }
+        //function to change the textfield border color depending on success or faliure 
+        function showErrorMessage(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            field.classList.add('border-red-500');
+            field.classList.remove('border-green-500');
+
+            const errorMessage = document.getElementById(`${fieldId}Error`);
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+        }
+
+        function showSuccessMessage(fieldId) {
+            const field = document.getElementById(fieldId);
+            field.classList.add('border-green-500');
+            field.classList.remove('border-red-500');
+
+            const errorMessage = document.getElementById(`${fieldId}Error`);
+            errorMessage.classList.add('hidden');
+        }
+
+        function addEventListeners() {
+            const form = document.getElementById('registrationForm');
+
+            form.addEventListener('submit', validateForm);
+
+            form.elements['name'].addEventListener('input', function() {
+                const name = this.value;
+                if (validateName(name)) {
+                    showSuccessMessage('name');
+                } else {
+                    showErrorMessage('name', 'Name must be at least 3 alphabetic characters.');
+                }
+            });
+
+            form.elements['email'].addEventListener('input', function() {
+                const email = this.value;
+                if (validateEmail(email)) {
+                    showSuccessMessage('email');
+                } else {
+                    showErrorMessage('email', 'Invalid email format.');
+                }
+            });
+
+            form.elements['password'].addEventListener('input', function() {
+                const password = this.value;
+                if (validatePassword(password)) {
+                    showSuccessMessage('password');
+                } else {
+                    showErrorMessage('password', 'Password must be at least 8 characters long and contain both letters and numbers.');
+                }
+            });
+
+            form.elements['confirmPassword'].addEventListener('input', function() {
+                const password = form.elements['password'].value;
+                const confirmPassword = this.value;
+                if (checkPasswordsMatch(password, confirmPassword)) {
+                    showSuccessMessage('confirmPassword');
+                } else {
+                    showErrorMessage('confirmPassword', 'Passwords do not match.');
+                }
+            });
+
+            form.elements['dob'].addEventListener('input', function() {
+                const dob = this.value;
+                if (validateDateOfBirth(dob)) {
+                    showSuccessMessage('dob');
+                } else {
+                    showErrorMessage('dob', 'You must be at least 18 years old.');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', addEventListeners);
+    </script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body>
+    <!--Defining form structure-->
+    <div class="min-h-screen flex items-start justify-center bg-gray-100 container-custom">
+        <div class="form-container">
+            <form id="registrationForm" class="bg-white p-8 rounded shadow-md w-full max-w-md">
+                <h2 class="text-center text-2xl font-bold mb-6">Register</h2>
+                <div class="mb-4">
+                    <label for="name" class="block text-gray-700">Name</label>
+                    <input type="text" id="name" name="name" class="w-full p-2 border rounded">
+                    <p id="nameError" class="text-red-500 text-sm hidden"></p>
+                </div>
+                <div class="mb-4">
+                    <label for="email" class="block text-gray-700">Email</label>
+                    <input type="email" id="email" name="email" class="w-full p-2 border rounded">
+                    <p id="emailError" class="text-red-500 text-sm hidden"></p>
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="block text-gray-700">Password</label>
+                    <input type="password" id="password" name="password" class="w-full p-2 border rounded">
+                    <p id="passwordError" class="text-red-500 text-sm hidden"></p>
+                </div>
+                <div class="mb-4">
+                    <label for="confirmPassword" class="block text-gray-700">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" class="w-full p-2 border rounded">
+                    <p id="confirmPasswordError" class="text-red-500 text-sm hidden"></p>
+                </div>
+                <div class="mb-4">
+                    <label for="dob" class="block text-gray-700">Date of Birth</label>
+                    <input type="date" id="dob" name="dob" class="w-full p-2 border rounded">
+                    <p id="dobError" class="text-red-500 text-sm hidden"></p>
+                </div>
+                <button type="submit" id="regbut" class="w-full p-2 bg-blue-500 text-white rounded">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
